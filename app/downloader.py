@@ -31,6 +31,11 @@ def extract_video(url):
         logger.info(f"Extracting metadata from: {url}")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
+            if not info:
+             return {
+               "success": False,
+                "error": "Could not fetch Instagram media"
+             }
 
             # Get file size to prevent memory overload
             filesize = info.get("filesize") or info.get("filesize_approx") or 0

@@ -1,13 +1,16 @@
-from rembg import remove
-from PIL import Image
-from io import BytesIO
+import requests
+
+API_KEY = "YOUR_API_KEY"
 
 def remove_background(image_bytes):
-    input_image = Image.open(BytesIO(image_bytes))
+    response = requests.post(
+        "https://api.remove.bg/v1.0/removebg",
+        files={"image_file": image_bytes},
+        data={"size": "auto"},
+        headers={"X-Api-Key": API_KEY},
+    )
 
-    output = remove(input_image)
+    if response.status_code != 200:
+        raise Exception("Background removal failed")
 
-    output_buffer = BytesIO()
-    output.save(output_buffer, format="PNG")
-
-    return output_buffer.getvalue()
+    return response.content

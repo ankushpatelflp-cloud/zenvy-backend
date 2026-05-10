@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Background Remover</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#0f172a;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+      color:white;
+    }
+
+    .container{
+      width:100%;
+      max-width:420px;
+      background:#1e293b;
+      padding:30px;
+      border-radius:20px;
+      text-align:center;
+      box-shadow:0 0 25px rgba(0,0,0,0.4);
+    }
+
+    h1{
+      margin-bottom:20px;
+      font-size:28px;
+    }
+
+    .upload-box{
+      border:2px dashed #475569;
+      padding:25px;
+      border-radius:15px;
+      margin-bottom:20px;
+      background:#0f172a;
+    }
+
+    input[type="file"]{
+      color:white;
+      margin-top:10px;
+    }
+
+    button{
+      background:#2563eb;
+      color:white;
+      border:none;
+      padding:12px 20px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:16px;
+      margin-top:15px;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#1d4ed8;
+    }
+
+    #loading{
+      display:none;
+      margin-top:20px;
+      font-size:16px;
+      color:#93c5fd;
+    }
+
+    #result-container{
+      margin-top:25px;
+      display:none;
+    }
+
+    #result{
+      width:100%;
+      max-width:300px;
+      border-radius:15px;
+      background:white;
+      padding:10px;
+    }
+
+    #downloadBtn{
+      display:none;
+      background:#16a34a;
+    }
+
+    #downloadBtn:hover{
+      background:#15803d;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Background Remover</h1>
+
+    <div class="upload-box">
+      <p>Select your image</p>
+      <input type="file" id="imageInput" accept="image/*">
+    </div>
+
+    <button onclick="removeBg()">Remove Background</button>
+
+    <div id="loading">
+      Removing background...
+    </div>
+
+    <div id="result-container">
+      <img id="result" />
+
+      <br>
+
+      <button id="downloadBtn">
+        Download Image
+      </button>
+    </div>
+
+  </div>
+
+<script>
+
+async function removeBg(){
+
+    const fileInput = document.getElementById("imageInput");
+
+    if(fileInput.files.length === 0){
+        alert("Please select an image");
+        return;
+    }
+
+    const file = fileInput.files[0];
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("result-container").style.display = "none";
+
+    try{
+
+        const response = await fetch(
+            "https://factsheet-fragrant-dislike.ngrok-free.dev/remove-bg",
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+        if(!response.ok){
+            throw new Error("Failed");
+        }
+
+        const blob = await response.blob();
+
+        const imageUrl = URL.createObjectURL(blob);
+
+        const resultImage = document.getElementById("result");
+
+        resultImage.src = imageUrl;
+
+        document.getElementById("loading").style.display = "none";
+
+        document.getElementById("result-container").style.display = "block";
+
+        const downloadBtn = document.getElementById("downloadBtn");
+
+        downloadBtn.style.display = "inline-block";
+
+        downloadBtn.onclick = () => {
+
+            const a = document.createElement("a");
+
+            a.href = imageUrl;
+
+            a.download = "removed-background.png";
+
+            a.click();
+        };
+
+    }
+    catch(error){
+
+        document.getElementById("loading").style.display = "none";
+
+        alert("Error removing background");
+    }
+}
+
+</script>
+
+</body>
+</html>

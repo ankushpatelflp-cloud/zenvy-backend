@@ -2,7 +2,4 @@ fastapi
 uvicorn
 python-multipart
 yt-dlp
-rembg
-pillow
-onnxruntime
-numpy
+requests

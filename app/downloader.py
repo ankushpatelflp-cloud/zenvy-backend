@@ -21,6 +21,10 @@ def extract_video(url):
         "nocheckcertificate": True,
         "socket_timeout": DOWNLOAD_TIMEOUT,
         "format": "best[filesize<500M]/best",
+        "extractor_retries": 3,
+        "retries": 3,
+        "fragment_retries": 3,
+        "ignoreerrors": True,
     }
 
     try:
